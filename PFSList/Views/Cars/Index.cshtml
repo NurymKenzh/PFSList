@@ -1,0 +1,69 @@
+﻿@*@model IEnumerable<PFSList.Models.Car>*@
+@model PagedList.IPagedList<PFSList.Models.Car>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" />
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+@using (Html.BeginForm("Index", "Cars", new { SortOrder = Request.QueryString["SortOrder"], ProducerName = ViewBag.ProducerNameFilter, CarName = ViewBag.CarNameFilter }, FormMethod.Get))
+{
+    <table class="table">
+        <tr>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Producer.Name)*@
+                @Html.ActionLink("Producer", "Index", new { SortOrder = ViewBag.ProducerNameSort, ProducerName = ViewBag.ProducerNameFilter, CarName = ViewBag.CarNameFilter })
+                <br />
+                @Html.DropDownList("ProducerName", (IEnumerable<SelectListItem>)ViewBag.ProducerName, "", htmlAttributes: new { @class = "form-control" })
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Name)*@
+                @Html.ActionLink("Name", "Index", new { SortOrder = ViewBag.CarNameSort, ProducerName = ViewBag.ProducerNameFilter, CarName = ViewBag.CarNameFilter })
+                <br />
+                @Html.Editor("CarName", null, new { htmlAttributes = new { @class = "form-control" }, value = "" })
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Cost)*@
+                @Html.ActionLink("Cost", "Index", new { SortOrder = ViewBag.CostSort, ProducerName = ViewBag.ProducerNameFilter, CarName = ViewBag.CarNameFilter })
+            </th>
+            <th>
+                <input type="submit" value="Find" class="btn btn-default">
+            </th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Producer.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Cost)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            </tr>
+        }
+
+    </table>
+}
+
+@Html.PagedListPager(Model, page => Url.Action(
+    "Index",
+    new { page, SortOrder = Request.QueryString["SortOrder"], ProducerName = ViewBag.ProducerNameFilter, CarName = ViewBag.CarNameFilter }
+    ),
+    new PagedListRenderOptions() { PageCountAndCurrentLocationFormat = "{0} / {1}", DisplayPageCountAndCurrentLocation = true }
+    )
